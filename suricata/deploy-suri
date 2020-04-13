@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Script needs to run as root
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit 1
+fi
+
+# Explain what will happen
+echo -e "Before running this script, make sure you know what will happen. This script will:\n\n \
+- Add the OISF PPA repository\n \
+- Install Suricata\n \
+- Download Suricata configuration files from Github\n \"
+
+# Ask for confirmation before running
+read -r -p "Are you sure you want to continue? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY]) 
+        # Add the Suricata PPA
+        add-apt-repository ppa:oisf/suricata-stable -y
+        # Install Suricata
+        apt install suricata -y
+        # Download configuration files for Suricata
+        wget 
+        exit 0
+        ;;
+    *)
+        exit 0
+        ;;
+esac
