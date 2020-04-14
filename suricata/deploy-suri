@@ -14,28 +14,30 @@ fi
 # Internet 1 2?
 wget -q --spider http://google.com
 if [ $? -eq 0 ]; then
-  echo "Yeah, we goode"
+  echo "Yeah, we good"
+  clear
 else
   echo "Houston, we have a problem! No Internet!"
   exit 1
 fi
 
 # Explain what will happen
-echo -e "Before running this script, make sure you know what will happen. This script will:\n\n \
+echo -e "\nBefore running this script, make sure you know what will happen. This script will:\n\n \
 - Add the OISF PPA repository\n \
 - Install Suricata\n \
-- Download Suricata configuration files from Github\n \ 
+- Download Suricata configuration files from Github\n \
 - Ask you about your HOME CIDR to adjust the Suricata configuration file\n \
 - Ask you about which interface you'd like to use with Suricata\n \
 - Make sure the interface is in PROMISC mode by adding an entry to /etc/rc.local\n \
 - Create Suricata rules files with suricata-update\n \
-- Stop/Start Suricata\n \ 
-- Download tmNIDS from Github and place it in /tmp so you can test detection\n \ "
+- Stop/Start Suricata\n \
+- Download tmNIDS from Github and place it in /tmp so you can test detection\n \""
 
 # Ask for confirmation before running
-read -r -p "Are you sure you want to continue? [y/N]" response
+read -r -p "Are you sure you want to continue? [y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY])
+        echo ""
         echo -e "${GREEN}► Updating OS ...${NC}\n"
         apt -qq update > /dev/null 2>&1
         # Prevent dialog of dpkg for config overwrite
