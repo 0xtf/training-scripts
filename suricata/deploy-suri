@@ -31,7 +31,7 @@ echo -e "\nBefore running this script, make sure you know what will happen. This
 - Make sure the interface is in PROMISC mode by adding an entry to /etc/rc.local\n \
 - Create Suricata rules files with suricata-update\n \
 - Stop/Start Suricata\n \
-- Download tmNIDS from Github and place it in /tmp so you can test detection\n \""
+- Download tmNIDS from Github and place it in /tmp so you can test detection\n"
 
 # Ask for confirmation before running
 read -r -p "Are you sure you want to continue? [y/N] " response
