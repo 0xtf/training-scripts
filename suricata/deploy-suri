@@ -6,7 +6,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # I don't trust myself to only run this on Ubuntu or Debian
-if [ "$(grep -Ei 'debian/buntu' /etc/*release)" ]; then
+if [ "$(grep -Ei 'debian|buntu' /etc/*release)" ]; then
   echo "Seems like we are good!"
   clear
 else
