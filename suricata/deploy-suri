@@ -10,6 +10,7 @@ if [ "$(grep -Ei 'debian/buntu' /etc/*release)" ]; then
   echo "Seems like we are good!"
   clear
 else
+  echo "Not Ubuntu or Debian!"
   exit 1
 fi
 
