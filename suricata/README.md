@@ -2,4 +2,4 @@
 
 ## Download and execute deploy-suri:
 
-`A`
+`curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/deploy-suri -o /tmp/deploy-suri && chmod +x /tmp/deploy-suri && /tmp/deploy-suri`
