@@ -1,8 +1,22 @@
 #!/bin/bash
 
+# Bling bling
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
 # Script needs to run as root
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
+  exit 1
+fi
+
+# Internet 1 2?
+wget -q --spider http://google.com
+if [ $? -eq 0 ]; then
+  echo "Yeah, we goode"
+else
+  echo "Houston, we have a problem! No Internet!"
   exit 1
 fi
 
@@ -10,21 +24,56 @@ fi
 echo -e "Before running this script, make sure you know what will happen. This script will:\n\n \
 - Add the OISF PPA repository\n \
 - Install Suricata\n \
-- Download Suricata configuration files from Github\n \"
+- Download Suricata configuration files from Github\n \ 
+- Ask you about your HOME CIDR to adjust the Suricata configuration file\n \
+- Ask you about which interface you'd like to use with Suricata\n \
+- Make sure the interface is in PROMISC mode by adding an entry to /etc/rc.local\n \
+- Create Suricata rules files with suricata-update\n \
+- Stop/Start Suricata\n \ 
+- Download tmNIDS from Github and place it in /tmp so you can test detection\n \ "
 
 # Ask for confirmation before running
-read -r -p "Are you sure you want to continue? [y/N] " response
+read -r -p "Are you sure you want to continue? [y/N]" response
 case "$response" in
     [yY][eE][sS]|[yY]) 
+        echo -e "${GREEN}► Installing OISF Suricata PPA ...${NC}\n"
         # Add the Suricata PPA
-        add-apt-repository ppa:oisf/suricata-stable -y
+        add-apt-repository ppa:oisf/suricata-stable -y > /dev/null 2>&1
+        echo -e "${GREEN}► Installing suricata via apt ...${NC}\n"
         # Install Suricata
-        apt install suricata -y
+        apt install suricata -y > /dev/null 2>&1
         # Download configuration files for Suricata
-        wget 
+        echo -e "${GREEN}► Downloading Suricata configuration files ...${NC}\n"
+        ## Disable rules
+        curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/suricata/configs/disable.conf -o /etc/suricata/disable.conf
+        ## suricata-update config
+        curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/suricata/configs/update.yaml -o /etc/suricata/update.yaml
+        ## suricata config
+        curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/suricata/configs/suricata.yaml -o /etc/suricata/suricata.yaml
+        echo -e "${GREEN}► Wake up! You have work to do. A few questions about the deployment ...${NC}\n"
+        # Ask about network
+        read -r -p "What's your HOME network CIDR (i.e 10.0.0.0/24)?" homecidr
+        # Ask about network interface
+        read -r -p "What's the capture device to use with Suricata (i.e ens160)?" capdevice
+        # Use the input from above to replace the placeholder REPLACE_NET and REPLACE_CAP in the Suricata configuration file
+        echo -e "${GREEN}► Adjusting Suricata configuration file based on your input ...${NC}\n"
+        sed -i "s!REPLACE_NET!${homecidr}!g" /etc/suricata/suricata.yaml
+        sed -i "s/REPLACE_CAP/${capdevice}/g" /etc/suricata/suricata.yaml
+        # Thank you netplan! Creating a config in rc.local to enable PROMISC on capture device
+        # TODO
+        # Generate rules file
+        echo -e "${GREEN}► Time to retrieve some rulesets and create rules file ...${NC}\n"
+        suricata-update
+        # Restart Suricata
+        echo -e "${GREEN}► We should be good to go. Restarting Suricata ...${NC}\n"
+        systemctl restart suricata.service
+        # Download tmNIDS
+        echo -e "${GREEN}► Downloading tmNIDS to /tmp in case you want to test detection ...${NC}\n"
+        curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS
+        echo -e "${GREEN}► If you'd like to test detection run tmNIDS: /tmp/tmNIDS ${NC}\n"
         exit 0
         ;;
     *)
-        exit 0
+        exit 1
         ;;
 esac
