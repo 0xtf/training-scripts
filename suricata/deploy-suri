@@ -35,12 +35,22 @@ echo -e "Before running this script, make sure you know what will happen. This s
 # Ask for confirmation before running
 read -r -p "Are you sure you want to continue? [y/N]" response
 case "$response" in
-    [yY][eE][sS]|[yY]) 
-        echo -e "${GREEN}► Installing OISF Suricata PPA ...${NC}\n"
+    [yY][eE][sS]|[yY])
+        echo -e "${GREEN}► Updating OS ...${NC}\n"
+        apt -qq update > /dev/null 2>&1
+        # Prevent dialog of dpkg for config overwrite
+        DEBIAN_FRONTEND=noninteractive apt -yq upgrade > /dev/null 2>&1
+        ## Clean up
+        apt -y autoremove > /dev/null 2>&1
+        # Change hostname
+        echo -e "${GREEN}► Branding ... Changing hostname ...${NC}\n"
+        hostnamectl set-hostname suricata
         # Add the Suricata PPA
+        sed -i "s/preserve_hostname: false/preserve_hostname: true/" /etc/cloud/cloud.cfg
+        echo -e "${GREEN}► Installing OISF Suricata PPA ...${NC}\n"
         add-apt-repository ppa:oisf/suricata-stable -y > /dev/null 2>&1
-        echo -e "${GREEN}► Installing suricata via apt ...${NC}\n"
         # Install Suricata
+        echo -e "${GREEN}► Installing suricata via apt ...${NC}\n"
         apt install suricata -y > /dev/null 2>&1
         # Download configuration files for Suricata
         echo -e "${GREEN}► Downloading Suricata configuration files ...${NC}\n"
@@ -50,6 +60,7 @@ case "$response" in
         curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/suricata/configs/update.yaml -o /etc/suricata/update.yaml
         ## suricata config
         curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/suricata/configs/suricata.yaml -o /etc/suricata/suricata.yaml
+        # User input for deployment specific configurations
         echo -e "${GREEN}► Wake up! You have work to do. A few questions about the deployment ...${NC}\n"
         # Ask about network
         read -r -p "What's your HOME network CIDR (i.e 10.0.0.0/24)?" homecidr
