@@ -39,10 +39,10 @@ echo -e "\nBefore running this script, make sure you know what will happen. This
 - Download Suricata configuration files from Github\n \
 - Ask you about your HOME CIDR to adjust the Suricata configuration file\n \
 - Ask you about which interface you'd like to use with Suricata\n \
-- Make sure the interface is in PROMISC mode by adding an entry to /etc/rc.local\n \
+- Make sure the interface is in PROMISC mode and add an entry to /etc/rc.local to make sure it stays that way\n \
+- Create a separate netplan configuration for the capture device to mark it as optional so it doesn't hang on reboots\n \
 - Create Suricata rules files with suricata-update\n \
-- Stop/Start Suricata\n \
-- Download tmNIDS from Github and place it in /tmp so you can test detection\n"
+- Stop/Start Suricata\n"
 
 # Ask for confirmation before running
 read -r -p "Are you sure you want to continue? [y/N] " response
@@ -81,24 +81,28 @@ case "$response" in
         # Ask about network interface
         read -r -p "What's the capture device to use with Suricata (i.e ens160)? " capdevice
         # Use the input from above to replace the placeholder REPLACE_NET and REPLACE_CAP in the Suricata configuration file
+        echo ""
         echo -e "${GREEN}► Adjusting Suricata configuration file based on your input ...${NC}\n"
         sed -i "s!REPLACE_NET!${homecidr}!g" /etc/suricata/suricata.yaml
         sed -i "s/REPLACE_CAP/${capdevice}/g" /etc/suricata/suricata.yaml
+        # Making sure device is up
+        ip link set $capdevice up
+        ip link set $capdevice promisc on
         # Thank you netplan! Creating a config in rc.local to enable PROMISC on capture device
-        # TODO
+        echo -e "ip link set $capdevice up\nip link set $capdevice promisc on" >> /etc/rc.local
+        chmod +x /etc/rc.local
+        # Adjusting netplan so it doesn't hang for unconfigured devices; making CAPDEVICE optional
+        ## I know. This hurts me more than it hurts you
+        echo -e "network:\n  version: 2\n  renderer: networkd\n  ethernets:\n    $capdevice:\n      optional: true" > /etc/netplan/60-suricata.yaml
         # Generate rules file
         echo -e "${GREEN}► Time to retrieve some rulesets and create rules file ...${NC}\n"
+        sleep 3
         suricata-update
         # Restart Suricata
         echo ""
         echo -e "${GREEN}► We should be good to go. Restarting Suricata ... Suricata state:${NC}\n"
         systemctl restart suricata.service
         systemctl is-active suricata.service
-        # Download tmNIDS
-        echo ""
-        echo -e "${GREEN}► Downloading tmNIDS to /tmp in case you want to test detection ...${NC}\n"
-        curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS
-        echo -e "${GREEN}► If you'd like to test detection run tmNIDS: /tmp/tmNIDS ${NC}\n"
         exit 0
         ;;
     *)
