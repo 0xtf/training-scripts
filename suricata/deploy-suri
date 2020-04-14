@@ -5,6 +5,14 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# I don't trust myself to only run this on Ubuntu or Debian
+if [ "$(grep -Ei 'debian/buntu' /etc/*release)" ]; then
+  echo "Seems like we are good!"
+  clear
+else
+  exit 1
+fi
+
 # Script needs to run as root
 if [ "$EUID" -ne 0 ]
   then echo "Please run as root"
