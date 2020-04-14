@@ -78,9 +78,12 @@ case "$response" in
         echo -e "${GREEN}► Time to retrieve some rulesets and create rules file ...${NC}\n"
         suricata-update
         # Restart Suricata
-        echo -e "${GREEN}► We should be good to go. Restarting Suricata ...${NC}\n"
+        echo ""
+        echo -e "${GREEN}► We should be good to go. Restarting Suricata ... Suricata state:${NC}\n"
         systemctl restart suricata.service
+        systemctl is-active suricata.service
         # Download tmNIDS
+        echo ""
         echo -e "${GREEN}► Downloading tmNIDS to /tmp in case you want to test detection ...${NC}\n"
         curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS
         echo -e "${GREEN}► If you'd like to test detection run tmNIDS: /tmp/tmNIDS ${NC}\n"
