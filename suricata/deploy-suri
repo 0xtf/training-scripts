@@ -23,6 +23,8 @@ fi
 
 # Explain what will happen
 echo -e "\nBefore running this script, make sure you know what will happen. This script will:\n\n \
+- Upgrade your base OS\n \
+- Change the hostname of the server to suricata\n \
 - Add the OISF PPA repository\n \
 - Install Suricata\n \
 - Download Suricata configuration files from Github\n \
@@ -47,8 +49,9 @@ case "$response" in
         # Change hostname
         echo -e "${GREEN}► Branding ... Changing hostname ...${NC}\n"
         hostnamectl set-hostname suricata
+        ## Making sure those changes stick after reboot; OK if it fails
+        sed -i "s/preserve_hostname: false/preserve_hostname: true/" /etc/cloud/cloud.cfg > /dev/null 2>&1
         # Add the Suricata PPA
-        sed -i "s/preserve_hostname: false/preserve_hostname: true/" /etc/cloud/cloud.cfg
         echo -e "${GREEN}► Installing OISF Suricata PPA ...${NC}\n"
         add-apt-repository ppa:oisf/suricata-stable -y > /dev/null 2>&1
         # Install Suricata
