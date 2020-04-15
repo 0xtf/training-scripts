@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# If no arguments are given, print this help
+if [ -z "$*" ]; then echo "Use it with -s (--server) or -c (--client)"; fi
+
+# Check if user wants to active or clear the killswitch 
+for arg in "$@"
+do
+  if [ "$arg" == "--server" ] || [ "$arg" == "-s" ]
+  then
+    
+    # Script needs to run as root
+    if [ "$EUID" -ne 0 ]
+      then echo "Please run as root"
+      exit 1
+    fi
+    
+    # install iperf
+    echo "Installing iperf ..."
+    apt -qq update > /dev/null 2>&1
+    apt -qq install iperf3 -y > /dev/null 2>&1
+
+    iperf3 -s
+  fi
+
+  if [ "$arg" == "--client" ] || [ "$arg" == "-c" ]
+  then
+    if [ "$EUID" -ne 0 ]
+      then echo "Please run as root"
+      exit 1
+    fi
+    
+    # install iperf
+    echo "Installing iperf ..."
+    apt -qq update > /dev/null 2>&1
+    apt -qq install iperf3 -y > /dev/null 2>&1
+
+    read -r -p "What's the iperf3 server IP address? " response
+    iperf3 -c $response --parallel 10 -i 1 -t 60 -V | grep SUM
+  fi
+done
