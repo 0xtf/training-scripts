@@ -3,7 +3,7 @@
 # If no arguments are given, print this help
 if [ -z "$*" ]; then echo "Use it with -s (--server) or -c (--client)"; fi
 
-# Check if user wants to active or clear the killswitch 
+# Check if user wants to use client or server feature
 for arg in "$@"
 do
   if [ "$arg" == "--server" ] || [ "$arg" == "-s" ]
