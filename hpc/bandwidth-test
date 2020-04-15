@@ -19,6 +19,8 @@ do
     echo "Installing iperf ..."
     apt -qq update > /dev/null 2>&1
     apt -qq install iperf3 -y > /dev/null 2>&1
+    # Display IP (if possible)
+    echo -e "\nHere's the IP of this machine: $(ip -o -4 addr show | awk -F '[ /]+' '/global/ {print $4}')\n"
 
     iperf3 -s
   fi
