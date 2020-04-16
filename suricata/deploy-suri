@@ -44,6 +44,8 @@ echo -e "\nBefore running this script, make sure you know what will happen. This
 - Create Suricata rules files with suricata-update\n \
 - Stop/Start Suricata\n"
 
+read -p "Press enter to continue"
+
 # Ask for confirmation before running
 read -r -p "Are you sure you want to continue? [y/N] " response
 case "$response" in
@@ -89,11 +91,12 @@ case "$response" in
         ip link set $capdevice up
         ip link set $capdevice promisc on
         # Thank you netplan! Creating a config in rc.local to enable PROMISC on capture device
-        echo -e "ip link set $capdevice up\nip link set $capdevice promisc on" >> /etc/rc.local
+        echo -e "#!/bin/sh\nset -e\nip link set $capdevice up\nip link set $capdevice promisc on" >> /etc/rc.local
         chmod +x /etc/rc.local
         # Adjusting netplan so it doesn't hang for unconfigured devices; making CAPDEVICE optional
         ## I know. This hurts me more than it hurts you
         echo -e "network:\n  version: 2\n  renderer: networkd\n  ethernets:\n    $capdevice:\n      optional: true" > /etc/netplan/60-suricata.yaml
+        netplan apply
         # Generate rules file
         echo -e "${GREEN}► Time to retrieve some rulesets and create rules file ...${NC}\n"
         sleep 3
@@ -103,6 +106,7 @@ case "$response" in
         echo -e "${GREEN}► We should be good to go. Restarting Suricata ... Suricata state:${NC}\n"
         systemctl restart suricata.service
         systemctl is-active suricata.service
+        echo ""
         exit 0
         ;;
     *)
