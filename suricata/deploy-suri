@@ -79,9 +79,9 @@ case "$response" in
         # User input for deployment specific configurations
         echo -e "${GREEN}► Wake up! You have work to do. A few questions about the deployment ...${NC}\n"
         # Ask about network
-        read -r -p "What's your HOME network CIDR (i.e 10.0.0.0/24)? " homecidr
+        read -r -p "What's your HOME network CIDR (i.e 10.0.0.0/16)? " homecidr
         # Ask about network interface
-        read -r -p "What's the capture device to use with Suricata (i.e ens160)? " capdevice
+        read -r -p "What's the capture device to use with Suricata (i.e ens6)? " capdevice
         # Use the input from above to replace the placeholder REPLACE_NET and REPLACE_CAP in the Suricata configuration file
         echo ""
         echo -e "${GREEN}► Adjusting Suricata configuration file based on your input ...${NC}\n"
