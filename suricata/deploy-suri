@@ -44,7 +44,7 @@ echo -e "\nBefore running this script, make sure you know what will happen. This
 - Create Suricata rules files with suricata-update\n \
 - Stop/Start Suricata\n"
 
-read -p "Press enter to continue"
+read -p "Press enter to continue ..."
 
 # Ask for confirmation before running
 read -r -p "Are you sure you want to continue? [y/N] " response
