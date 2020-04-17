@@ -2,6 +2,7 @@
 
 export serverPort=5201
 export clientPort=5201
+export ipClient="1.1.1.1"
 
 # If no arguments are given, print this help
 if [ -z "$*" ]; then echo "Use it with -s (--server) or -c (--client)"; fi
