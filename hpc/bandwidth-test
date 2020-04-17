@@ -6,6 +6,9 @@ if [ -z "$*" ]; then echo "Use it with -s (--server) or -c (--client)"; fi
 # Check if user wants to use client or server feature
 for arg in "$@"
 do
+  #
+  # Define server section
+  #
   if [ "$arg" == "--server" ] || [ "$arg" == "-s" ]
   then
     
@@ -16,15 +19,30 @@ do
     fi
     
     # install iperf
+    serverPort=5201
     echo "Installing iperf ..."
     apt -qq update > /dev/null 2>&1
     apt -qq install iperf3 -y > /dev/null 2>&1
     # Display IP (if possible)
     echo -e "\nHere's the IP of this machine: $(ip -o -4 addr show | awk -F '[ /]+' '/global/ {print $4}')\n"
+   
+    read -r -p "Would you like to define the port for iperf? Needed if you have more than 1 daemon running. [y/N] " response
+    case "$response" in
+    [yY][eE][sS]|[yY])
+        read -r -p "What port would you like iperf3 server to run? " serverPort
+        ;;
+    *)
+        echo "OK! We'll use the default port."
+        ;;
+    esac
 
-    iperf3 -s
+    # Run the actual test
+    iperf3 -s -p $serverPort
   fi
 
+  # 
+  # Define client section
+  #
   if [ "$arg" == "--client" ] || [ "$arg" == "-c" ]
   then
     if [ "$EUID" -ne 0 ]
@@ -33,11 +51,23 @@ do
     fi
     
     # install iperf
+    clientPort=5201
     echo "Installing iperf ..."
     apt -qq update > /dev/null 2>&1
     apt -qq install iperf3 -y > /dev/null 2>&1
 
     read -r -p "What's the iperf3 server IP address? " response
-    iperf3 -c $response --parallel 10 -i 1 -t 60 -V | grep SUM
+    read -r -p "Would you like to define where we should connect on the iperf3 server? Needed if not running in the default port or if you have more than 1 daemon running. [y/N] " response
+    case "$response" in
+    [yY][eE][sS]|[yY])
+        read -r -p "What port would you like to connect to? " clientPort
+        ;;
+    *)
+        echo "OK! We'll use the default port."
+        ;;
+    esac
+
+    # Run the actual test
+    iperf3 -c $response -p $clientPort--parallel 10 -i 1 -t 60 -V | grep SUM
   fi
 done
