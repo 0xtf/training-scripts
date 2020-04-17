@@ -1,7 +1,7 @@
 #!/bin/bash
 
-serverPort=5201
-clientPort=5201
+export serverPort=5201
+export clientPort=5201
 
 # If no arguments are given, print this help
 if [ -z "$*" ]; then echo "Use it with -s (--server) or -c (--client)"; fi
