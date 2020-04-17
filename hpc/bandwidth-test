@@ -29,16 +29,15 @@ do
     read -r -p "Would you like to define the port? Needed if you have more than 1 daemon running. [y/N] " response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
     then      
-    echo -e "\nOK. Let's define the port then ... Save the file and exit vim after you're done."
-    sleep 3  
-    vim /tmp/bandwidth-test-serverport
-    serverPort="cat /tmp/bandwidth-test-serverport"
+      echo -e "\nOK. Let's define the port then ... Save the file and exit vim after you're done."
+      sleep 3  
+      vim /tmp/bandwidth-test-serverport
+      serverPort="cat /tmp/bandwidth-test-serverport"
+      iperf3 -s -p $serverPort
     else
       echo "OK! We'll use the default port."
+      iperf3 -s
     fi
-
-    # Run the actual test
-    iperf3 -s -p $serverPort
   fi
 
   # 
@@ -60,16 +59,16 @@ do
     vim /tmp/bandwidth-test-serverip
     ipClient="cat /tmp/bandwidth-test-serverip"
     read -r -p "Define server port? Needed if not running in the default port or if you have more than 1 daemon running. [y/N] " response
+
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
     then
       echo -e "\nOK. Let's define the port then ... Save the file and exit vim after you are done"
       vim /tmp/bandwidth-test-clientport
       clientPort="cat vim /tmp/bandwidth-test-clientport"
+      iperf3 -c $ipClient -p $clientPort --parallel 10 -i 1 -t 60 -V | grep SUM
     else
       echo "OK! We'll use the default port."
+      iperf3 -c $ipClient --parallel 10 -i 1 -t 60 -V | grep SUM
     fi
-
-    # Run the actual test
-    iperf3 -c $ipClient -p $clientPort --parallel 10 -i 1 -t 60 -V | grep SUM
   fi
 done
