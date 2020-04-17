@@ -29,6 +29,7 @@ do
     read -r -p "Would you like to define the port for iperf? Needed if you have more than 1 daemon running. [y/N] " response
     case "$response" in
     [yY][eE][sS]|[yY])
+        echo -e "\nOK. Let's define the port then ..."
         read -r -p "What port would you like iperf3 server to run? " serverPort
         ;;
     *)
@@ -60,6 +61,7 @@ do
     read -r -p "Would you like to define where we should connect on the iperf3 server? Needed if not running in the default port or if you have more than 1 daemon running. [y/N] " response
     case "$response" in
     [yY][eE][sS]|[yY])
+        echo -e "\nOK. Let's define the port then ..."
         read -r -p "What port would you like to connect to? " clientPort
         ;;
     *)
