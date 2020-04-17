@@ -1,9 +1,12 @@
 # This folder is meant to be used from the HPC scripts
 
-## Download and execute bandwidth-test for server
+## Server side
 
-`curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/hpc/bandwidth-test -o /tmp/bandwidth-test && chmod +x /tmp/bandwidth-test && /tmp/bandwidth-test --server`
+First daemon: `iperf3 -s`
+Second daemon: `iperf3 -s -p 5202`
 
-## Download and execute bandwidth-test for client
 
-`curl -sSL https://raw.githubusercontent.com/0xtf/training-scripts/master/hpc/bandwidth-test -o /tmp/bandwidth-test && chmod +x /tmp/bandwidth-test && /tmp/bandwidth-test --client`
+## Client side
+
+First client: `iperf3 -c IP --parallel 10 -i 1 -t 60 -V | grep SUM`
+Second client: `iperf3 -c IP -p 5202 --parallel 10 -i 1 -t 60 -V | grep SUM`
