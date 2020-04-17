@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Bling bling
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+LIST=/tmp/netchaos.list
+
+# Explain what will happen
+echo -e "\nBefore running this script, make sure you know what will happen. This script will:\n\n \
+- Ask you for the IPs of the machines where you'd like to create chaos on\n \
+- Ask you for the username that should be used to connect to those same machines\n \
+- Ask you for the SSH key to use in the connection (passwords not supported; What year is this!?)\n \
+- Connect to all IPs you specify and download tmNIDS\n \
+- Run tmNIDS on those machines and execute all available tests\n \
+- tmNIDS (testmynids.org) does not perform any malicious activities on your machines\n"
+
+read -p "Press enter to continue ..."
+
+read -r -p "Are you sure you want to continue? [y/N] " response
+case "$response" in
+  [yY][eE][sS]|[yY])
+    echo -e "\nWe'll now open a text editor so you can add all IPs for the test"
+    sleep 3
+    vim $LIST
+
+    # Ask for input on SSH key
+    read -r -p "What SSH key file should we use to access the remote servers? Enter the full path: " keyFile
+
+    # Check if the file that was given as a key exists
+    if [ ! -f $keyFile ]; then
+      echo "File that was given as key does not exist!"
+      exit 1
+    fi
+
+    # Ask for input for username
+    read -r -p "What username should be used on the remote server? " remoteUser
+
+    # Start creating CHAOS
+    while read p; do
+      ssh -i $keyFile $remoteUser@$p 'curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS && /tmp/tmNIDS -99'
+    done <$LIST
+    exit 0
+    ;;
+  *)
+    exit 1
+    ;;
+esac
