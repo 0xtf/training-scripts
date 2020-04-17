@@ -70,6 +70,6 @@ do
     esac
 
     # Run the actual test
-    iperf3 -c $ipClient -p $clientPort--parallel 10 -i 1 -t 60 -V | grep SUM
+    iperf3 -c $ipClient -p $clientPort --parallel 10 -i 1 -t 60 -V | grep SUM
   fi
 done
