@@ -1,5 +1,8 @@
 #!/bin/bash
 
+serverPort=5201
+clientPort=5201
+
 # If no arguments are given, print this help
 if [ -z "$*" ]; then echo "Use it with -s (--server) or -c (--client)"; fi
 
@@ -18,14 +21,14 @@ do
       exit 1
     fi
     
-    # install iperf
-    serverPort=5201
     echo "Installing iperf ..."
     apt -qq update > /dev/null 2>&1
     apt -qq install iperf3 -y > /dev/null 2>&1
+    
     # Display IP (if possible)
     echo -e "\nHere's the IP of this machine: $(ip -o -4 addr show | awk -F '[ /]+' '/global/ {print $4}')\n"
    
+    # User input
     read -r -p "Would you like to define the port for iperf? Needed if you have more than 1 daemon running. [y/N] " response
     case "$response" in
     [yY][eE][sS]|[yY])
@@ -51,12 +54,11 @@ do
       exit 1
     fi
     
-    # install iperf
-    clientPort=5201
     echo "Installing iperf ..."
     apt -qq update > /dev/null 2>&1
     apt -qq install iperf3 -y > /dev/null 2>&1
 
+    # User input
     read -r -p "What's the iperf3 server IP address? " ipClient
     read -r -p "Would you like to define where we should connect on the iperf3 server? Needed if not running in the default port or if you have more than 1 daemon running. [y/N] " response
     case "$response" in
