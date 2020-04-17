@@ -57,7 +57,7 @@ do
     apt -qq update > /dev/null 2>&1
     apt -qq install iperf3 -y > /dev/null 2>&1
 
-    read -r -p "What's the iperf3 server IP address? " response
+    read -r -p "What's the iperf3 server IP address? " ipClient
     read -r -p "Would you like to define where we should connect on the iperf3 server? Needed if not running in the default port or if you have more than 1 daemon running. [y/N] " response
     case "$response" in
     [yY][eE][sS]|[yY])
@@ -70,6 +70,6 @@ do
     esac
 
     # Run the actual test
-    iperf3 -c $response -p $clientPort--parallel 10 -i 1 -t 60 -V | grep SUM
+    iperf3 -c $ipClient -p $clientPort--parallel 10 -i 1 -t 60 -V | grep SUM
   fi
 done
