@@ -37,10 +37,12 @@ case "$response" in
     # Ask for input for username
     read -r -p "What username should be used on the remote server? " remoteUser
 
-    # Start creating CHAOS
-    while read p; do
-      ssh -i $keyFile $remoteUser@$p 'curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS && /tmp/tmNIDS -99'
-    done <$LIST
+    # Create chaos
+    while IFS= read -r line
+    do
+      ssh -oStrictHostKeyChecking=no -i $keyFile $remoteUser@"$p" 'curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS && /tmp/tmNIDS -99'
+    done < "$LIST"
+    
     exit 0
     ;;
   *)
