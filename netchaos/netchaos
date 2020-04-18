@@ -21,7 +21,7 @@ case "$response" in
   [yY][eE][sS]|[yY])
     echo -e "\nWe'll now open a text editor so you can add all IPs for the test"
     sleep 3
-    vim $LIST
+    vim /tmp/netchaos.list
 
     # Ask for input on SSH key
     read -r -p "What SSH key file should we use to access the remote servers? Enter the full path: " keyFile
