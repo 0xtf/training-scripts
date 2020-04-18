@@ -53,6 +53,7 @@ case "$response" in
         echo ""
         echo -e "${GREEN}► Updating OS ...${NC}\n"
         apt -qq update > /dev/null 2>&1
+        apt install jq -y > /dev/null 2>&1
         # Prevent dialog of dpkg for config overwrite
         DEBIAN_FRONTEND=noninteractive apt -yq upgrade > /dev/null 2>&1
         ## Clean up
