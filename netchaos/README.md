@@ -6,4 +6,4 @@
 
 ## One liner to display unique IPs involved in Suricata alerts
 
-`echo -e "\nSource IPs:\n" && cat /var/log/suricata/eve.json | jq -r -c 'select(.event_type=="alert")|.src_ip'|grep 10.0 | more | uniq && echo -e "\nDestination IPs:\n" && cat /var/log/suricata/eve.json | jq -r -c 'select(.event_type=="alert")|.dest_ip'|grep 10.0 | more | uniq && echo ""`
+`echo -e "\n\033[0;31mSource IPs:\033[0m\n" && cat /var/log/suricata/eve.json | jq -r -c 'select(.event_type=="alert")|.src_ip'|grep 10.0 | more | uniq && echo -e "\n\033[0;31mDestination IPs:\033[0m\n" && cat /var/log/suricata/eve.json | jq -r -c 'select(.event_type=="alert")|.dest_ip'|grep 10.0 | more | uniq && echo ""`
