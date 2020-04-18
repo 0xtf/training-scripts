@@ -40,7 +40,7 @@ case "$response" in
     # Create chaos
     while IFS= read -r line
     do
-      ssh -oStrictHostKeyChecking=no -i $keyFile $remoteUser@"$p" 'curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS && /tmp/tmNIDS -99'
+      ssh -oStrictHostKeyChecking=no -i $keyFile $remoteUser@"$line" 'curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS && /tmp/tmNIDS -99'
     done < "$LIST"
     
     exit 0
