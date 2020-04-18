@@ -5,8 +5,6 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-LIST=/tmp/netchaos.list
-
 # Explain what will happen
 echo -e "\nBefore running this script, make sure you know what will happen. This script will:\n\n \
 - Ask you for the IPs of the machines where you'd like to create chaos on\n \
@@ -38,11 +36,7 @@ case "$response" in
     read -r -p "What username should be used on the remote server? " remoteUser
 
     # Create chaos
-    while IFS= read -r line
-    do
-      ssh -oStrictHostKeyChecking=no -i $keyFile $remoteUser@"$line" 'curl -sSL https://raw.githubusercontent.com/0xtf/testmynids.org/master/tmNIDS -o /tmp/tmNIDS && chmod +x /tmp/tmNIDS && /tmp/tmNIDS -99'
-    done < "$LIST"
-    
+    for host in $(cat /tmp/netchaos.list); do ssh -oStrictHostKeyChecking=no -i $keyFile $remoteUser@$host 'uptime'; done
     exit 0
     ;;
   *)
